@@ -18,7 +18,7 @@ class Demo extends Phaser.Scene {
         esc = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
         keyL = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L);
     
-        player = new Player(this, game.config.width/2, game.config.height/2, 'MC');
+        player = new Player(this, game.config.width/2, game.config.height*3/4, 'MC');
         player.init();
 
         this.ball = new Ball(this, game.config.width/2, game.config.height/2, 'laser').setAlpha(0);
@@ -73,7 +73,7 @@ class Demo extends Phaser.Scene {
         player.update();
         this.ball.update();
 
-        if(pointer.leftButtonDown()){
+        if(!this.ball.launched && pointer.leftButtonDown()){
             this.ball.launched = true;
             this.ball.setAlpha(1);
             this.physics.moveTo(this.ball, pointer.worldX, pointer.worldY, FAST);
@@ -108,6 +108,12 @@ class Demo extends Phaser.Scene {
             if(!h.placed){
                 h.dominote();
                 this.gameOver++;
+                this.monsterGroup.children.each(function(m) {
+                    if(!m.green){
+                        m.chasing = false;
+                        m.break(h);
+                    }
+                });
             }
         });
 
@@ -115,6 +121,11 @@ class Demo extends Phaser.Scene {
             if(h.placed){
                 h.dedominote();
                 this.gameOver--;
+                this.monsterGroup.children.each(function(m) {
+                    if(!m.green){
+                        m.chasing = true;
+                    }
+                });
             }
         });
 
@@ -140,7 +151,7 @@ class Demo extends Phaser.Scene {
                     }
                 });
             }
-            b.launched = false;
+            b.setAlpha(0);
         });
 
         this.physics.add.collider(this.monsterGroup, player, (m, p) => {
