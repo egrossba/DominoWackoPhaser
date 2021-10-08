@@ -4,6 +4,7 @@ class Demo extends Phaser.Scene {
     }
 
     create() {
+        this.add.sprite(0, 0, 'bg').setOrigin(0).setScale(7.5);
         this.input.mouse.disableContextMenu();
         this.layer = this.add.layer();
 
