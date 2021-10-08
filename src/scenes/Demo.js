@@ -18,10 +18,10 @@ class Demo extends Phaser.Scene {
         esc = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
         keyL = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L);
     
-        player = new Player(this, game.config.width/2, game.config.height/2, 'bunny');
+        player = new Player(this, game.config.width/2, game.config.height/2, 'MC');
         player.init();
 
-        this.ball = new Ball(this, game.config.width/2, game.config.height/2, 'clayball').setAlpha(0);
+        this.ball = new Ball(this, game.config.width/2, game.config.height/2, 'laser').setAlpha(0);
         this.ball.init();
         
         this.holesGroup = this.add.group();
@@ -39,7 +39,7 @@ class Demo extends Phaser.Scene {
             this.monsterGroup.add(temp);
         }
         for(let i = 2; i < 4; i++){
-            let temp = new Monster(this, 200 + i*100, game.config.height/3, 'rMonster');
+            let temp = new Monster(this, 200 + i*100, game.config.height/3, 'wolf');
             temp.init();
             this.monsterGroup.add(temp);
         }

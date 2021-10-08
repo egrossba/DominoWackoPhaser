@@ -6,7 +6,7 @@ class Monster extends Phaser.Physics.Arcade.Sprite {
     }
 
     init(){
-        this.setOrigin(0.5).setScale(2);
+        this.setOrigin(0.5).setScale(0.75);
         this.body.setImmovable(true);
         this.gotHit = false;
         this.green = false;
