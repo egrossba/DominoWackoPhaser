@@ -35,17 +35,20 @@ class Demo extends Phaser.Scene {
         for(let i = 0; i < 2; i++){
             let temp = new Monster(this, 200 + i*100, game.config.height/3, 'gMonster');
             temp.init();
-            temp.green = true;
+            temp.race = 'green';
             this.monsterGroup.add(temp);
         }
         for(let i = 2; i < 4; i++){
             let temp = new Monster(this, 200 + i*100, game.config.height/3, 'wolf');
             temp.init();
+            temp.race = 'wolf';
             this.monsterGroup.add(temp);
         }
         this.monsterGroup.runChildUpdate = true;
+
         this.gTwins = 0;
-        this.rTwins = 0;
+        this.wTwins = 0;
+        this.cTwins = 0;
 
         this.layer.add(this.holesGroup.getChildren());
         this.layer.add(this.ball);
@@ -53,6 +56,7 @@ class Demo extends Phaser.Scene {
         this.layer.add(this.monsterGroup.getChildren());
 
         this.gameOver = 0;
+        this.chimCount = 0;
 
         this.setColliders();
     }
@@ -80,19 +84,31 @@ class Demo extends Phaser.Scene {
             this.time.delayedCall(500, () => { 
                 this.ball.setAlpha(0);
                 this.ball.launched = false;
+                this.ball.body.enable = true;
             });
         }
 
         if(this.gTwins == 2){
+            this.gTwins = 0;
             this.monsterGroup.children.each(function(m) {
-                if(m.green){
+                if(m.race == 'green'){
                     m.destroy();
                 }
             });
         }
-        else if(this.rTwins == 2){
+        if(this.wTwins == 2){
+            this.wTwins = 0;
             this.monsterGroup.children.each(function(m) {
-                if(!m.green){
+                if(m.race == 'wolf'){
+                    m.destroy();
+                }
+            });
+        }
+        if(this.cTwins == 2){
+            this.cTwins = 0;
+            this.chimCount = 0;
+            this.monsterGroup.children.each(function(m) {
+                if(m.race == 'greenwolf'){
                     m.destroy();
                 }
             });
@@ -109,7 +125,7 @@ class Demo extends Phaser.Scene {
                 h.dominote();
                 this.gameOver++;
                 this.monsterGroup.children.each(function(m) {
-                    if(!m.green){
+                    if(!m.race == 'green'){
                         m.chasing = false;
                         m.break(h);
                     }
@@ -122,7 +138,7 @@ class Demo extends Phaser.Scene {
                 h.dedominote();
                 this.gameOver--;
                 this.monsterGroup.children.each(function(m) {
-                    if(!m.green){
+                    if(!m.race == 'green'){
                         m.chasing = true;
                     }
                 });
@@ -131,31 +147,57 @@ class Demo extends Phaser.Scene {
 
         this.physics.add.collider(this.ball, this.monsterGroup, (b, m) => {
             if(b.launched){
-                if(m.green){
+                if(m.race == 'green'){
                     this.gTwins++;
                 }
+                else if(m.race == 'wolf'){
+                    this.wTwins++;
+                }
                 else{
-                    this.rTwins++;
+                    this.cTwins++;
                 }
                 m.gotHit = true;
                 m.setVelocity(0);
                 m.setAlpha(0.5);
-                this.time.delayedCall(1000, () => { 
+
+                if(this.gTwins == 1 && this.wTwins == 1){
+                    if(this.chimCount < 2){
+                        this.spawnChimera();
+                    }
+                }
+
+                this.time.delayedCall(750, () => { 
                     m.setAlpha(1);
                     m.gotHit = false;
-                    if(m.green){
+                    if(m.race == 'green'){
                         this.gTwins--;
                     }
+                    else if(m.race == 'wolf'){
+                        this.wTwins--;
+                    }
                     else{
-                        this.rTwins--;
+                        this.cTwins--;
                     }
                 });
             }
             b.setAlpha(0);
+            b.body.enable = false;
         });
 
         this.physics.add.collider(this.monsterGroup, player, (m, p) => {
             this.gameOver = 4;
         });
+    }
+
+    spawnChimera(){
+        let name = 'chim1'
+        if(this.chimCount % 2 == 0){
+            name = 'chim2'
+        }
+        let temp = new Monster(this, game.config.width/2, game.config.height/3, name);
+        temp.init();
+        temp.race = 'greenwolf';
+        this.monsterGroup.add(temp);
+        this.chimCount++;
     }
 }
