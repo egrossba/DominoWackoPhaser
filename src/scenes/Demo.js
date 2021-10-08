@@ -21,7 +21,7 @@ class Demo extends Phaser.Scene {
         player.init();
         this.layer.add(player);
 
-        this.ball = new Ball(this, game.config.width/3, game.config.height/2, 'clayball');
+        this.ball = new Ball(this, game.config.width/2, game.config.height/2, 'clayball').setAlpha(0);
         this.ball.init();
         this.layer.add(this.ball);
     }
@@ -41,6 +41,15 @@ class Demo extends Phaser.Scene {
         // move player
         player.update();
         this.ball.update();
+
+        if(pointer.leftButtonDown()){
+            this.ball.x = player.x;
+            this.ball.y = player.y;
+            this.ball.setAlpha(1);
+            this.physics.moveTo(this.ball, pointer.worldX, pointer.worldY, FAST);
+            this.time.delayedCall(500, () => { 
+                this.ball.setAlpha(0);
+            });
+        }
     }
-    
 }
