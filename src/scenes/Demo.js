@@ -30,13 +30,18 @@ class Demo extends Phaser.Scene {
             this.holesGroup.add(temp);
         }
 
-        this.monster = new Monster(this, game.config.width/3, game.config.height/3, 'gMonster');
-        this.monster.init();
+        this.monsterGroup = this.add.group();
+        for(let i = 0; i < 4; i++){
+            let temp = new Monster(this, 200 + i*100, game.config.height/3, 'gMonster');
+            temp.init();
+            this.monsterGroup.add(temp);
+        }
+        this.monsterGroup.runChildUpdate = true;
 
         this.layer.add(this.holesGroup.getChildren());
         this.layer.add(this.ball);
         this.layer.add(player);
-        this.layer.add(this.monster);
+        this.layer.add(this.monsterGroup.getChildren());
 
         this.gameOver = 0;
 
@@ -58,10 +63,6 @@ class Demo extends Phaser.Scene {
         // move player
         player.update();
         this.ball.update();
-
-        if(!this.monster.gotHit){
-            this.physics.moveTo(this.monster, player.x, player.y, SLOW);
-        }
 
         if(pointer.leftButtonDown()){
             this.ball.launched = true;
@@ -86,14 +87,14 @@ class Demo extends Phaser.Scene {
             }
         });
 
-        this.physics.add.overlap(this.monster, this.holesGroup, (m, h) => {
+        this.physics.add.overlap(this.monsterGroup, this.holesGroup, (m, h) => {
             if(h.placed){
                 h.dedominote();
                 this.gameOver--;
             }
         });
 
-        this.physics.add.collider(this.ball, this.monster, (b, m) => {
+        this.physics.add.collider(this.ball, this.monsterGroup, (b, m) => {
             if(b.launched){
                 m.gotHit = true;
                 m.setVelocity(0);
@@ -104,6 +105,10 @@ class Demo extends Phaser.Scene {
                 m.clearTint();
                 m.gotHit = false;
             });
+        });
+
+        this.physics.add.collider(this.monsterGroup, player, (m, p) => {
+            this.gameOver = 4;
         });
     }
 }

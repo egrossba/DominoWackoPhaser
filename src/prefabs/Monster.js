@@ -13,7 +13,9 @@ class Monster extends Phaser.Physics.Arcade.Sprite {
 
 
     update() {
-
+        if(!this.gotHit){
+            this.scene.physics.moveTo(this, player.x, player.y, SLOW);
+        }
     }
 
 }
