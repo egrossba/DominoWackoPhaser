@@ -7,11 +7,23 @@ class Hole extends Phaser.Physics.Arcade.Sprite {
 
     init(){
         this.setOrigin(0.5).setScale(0.25);
+        this.dominoe = this.scene.add.sprite(this.x, this.y, 'deadBoard').setAlpha(0).setScale(0.25);
+        this.placed = false;
     }
 
 
     update() {
 
+    }
+
+    dominote(){
+        this.dominoe.setAlpha(1);
+        this.placed = true;
+    }
+
+    dedominote(){
+        this.dominoe.setAlpha(0);
+        this.placed = false;
     }
 
 }

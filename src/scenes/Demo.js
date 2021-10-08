@@ -38,6 +38,8 @@ class Demo extends Phaser.Scene {
         this.layer.add(player);
         this.layer.add(this.monster);
 
+        this.gameOver = 0;
+
         this.setColliders();
     }
 
@@ -70,15 +72,25 @@ class Demo extends Phaser.Scene {
                 this.ball.launched = false;
             });
         }
+
+        if(this.gameOver == 4){
+            this.scene.start('demoScene');
+        }
     }
 
     setColliders(){
         this.physics.add.overlap(player, this.holesGroup, (p, h) => {
-            h.dominote();
+            if(!h.placed){
+                h.dominote();
+                this.gameOver++;
+            }
         });
 
         this.physics.add.overlap(this.monster, this.holesGroup, (m, h) => {
-            h.dedominote();
+            if(h.placed){
+                h.dedominote();
+                this.gameOver--;
+            }
         });
 
         this.physics.add.collider(this.ball, this.monster, (b, m) => {
