@@ -146,7 +146,7 @@ class Demo extends Phaser.Scene {
         });
 
         this.physics.add.collider(this.ball, this.monsterGroup, (b, m) => {
-            if(b.launched){
+            if(b.launched && !m.gotHit){
                 if(m.race == 'green'){
                     this.gTwins++;
                 }
@@ -175,7 +175,7 @@ class Demo extends Phaser.Scene {
                     else if(m.race == 'wolf'){
                         this.wTwins--;
                     }
-                    else{
+                    else if(this.cTwins != 0){
                         this.cTwins--;
                     }
                 });
