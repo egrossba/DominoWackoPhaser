@@ -31,12 +31,20 @@ class Demo extends Phaser.Scene {
         }
 
         this.monsterGroup = this.add.group();
-        for(let i = 0; i < 4; i++){
+        for(let i = 0; i < 2; i++){
             let temp = new Monster(this, 200 + i*100, game.config.height/3, 'gMonster');
+            temp.init();
+            temp.green = true;
+            this.monsterGroup.add(temp);
+        }
+        for(let i = 2; i < 4; i++){
+            let temp = new Monster(this, 200 + i*100, game.config.height/3, 'rMonster');
             temp.init();
             this.monsterGroup.add(temp);
         }
         this.monsterGroup.runChildUpdate = true;
+        this.gTwins = 0;
+        this.rTwins = 0;
 
         this.layer.add(this.holesGroup.getChildren());
         this.layer.add(this.ball);
@@ -74,6 +82,21 @@ class Demo extends Phaser.Scene {
             });
         }
 
+        if(this.gTwins == 2){
+            this.monsterGroup.children.each(function(m) {
+                if(m.green){
+                    m.destroy();
+                }
+            });
+        }
+        else if(this.rTwins == 2){
+            this.monsterGroup.children.each(function(m) {
+                if(!m.green){
+                    m.destroy();
+                }
+            });
+        }
+
         if(this.gameOver == 4){
             this.scene.start('demoScene');
         }
@@ -96,15 +119,27 @@ class Demo extends Phaser.Scene {
 
         this.physics.add.collider(this.ball, this.monsterGroup, (b, m) => {
             if(b.launched){
+                if(m.green){
+                    this.gTwins++;
+                }
+                else{
+                    this.rTwins++;
+                }
                 m.gotHit = true;
                 m.setVelocity(0);
-                m.setTint(0xFF7878);
+                m.setAlpha(0.5);
+                this.time.delayedCall(1000, () => { 
+                    m.setAlpha(1);
+                    m.gotHit = false;
+                    if(m.green){
+                        this.gTwins--;
+                    }
+                    else{
+                        this.rTwins--;
+                    }
+                });
             }
-            
-            this.time.delayedCall(1000, () => { 
-                m.clearTint();
-                m.gotHit = false;
-            });
+            b.launched = false;
         });
 
         this.physics.add.collider(this.monsterGroup, player, (m, p) => {
