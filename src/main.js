@@ -32,7 +32,7 @@ let borderPadding = borderUISize / 3;
 // variables and settings
 let VELOCITY = 400;
 let FAST = VELOCITY*11/5;
-let SLOW = VELOCITY*6/5;
+let SLOW = VELOCITY/5;
 let DIAG_VEL = Math.sqrt(Math.pow(VELOCITY, 2)/2);
 let MAX_X_VEL = 2000;   // pixels/second
 let MAX_Y_VEL = 2000;

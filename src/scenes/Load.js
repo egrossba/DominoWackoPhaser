@@ -12,7 +12,8 @@ class Load extends Phaser.Scene {
         this.load.image('reticle', 'reticle.png');
         this.load.image('bounceBoard', 'Board-01.png');
         this.load.image('deadBoard', 'Board-02.png');
-
+        this.load.image('hole', 'hole.png');
+        this.load.image('gMonster', 'GreenMonster.png');
     }
 
     create() {

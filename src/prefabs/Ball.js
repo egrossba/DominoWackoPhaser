@@ -10,12 +10,15 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
         this.body.useDamping = true;
         this.body.setCollideWorldBounds();
         this.setMaxVelocity(MAX_X_VEL, MAX_Y_VEL);
-        this.caught = false;
+        this.launched = false;
     }
 
 
     update() {
-
+        if(!this.launched){
+            this.x = player.x;
+            this.y = player.y;
+        }
     }
 
 }
