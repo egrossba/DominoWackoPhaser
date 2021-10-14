@@ -17,11 +17,13 @@ class Hole extends Phaser.Physics.Arcade.Sprite {
     }
 
     dominote(){
+        // put a dominoe over the hole
         this.dominoe.setAlpha(1);
         this.placed = true;
     }
 
     dedominote(){
+        // get rid of the dominoe on the hole
         this.dominoe.setAlpha(0);
         this.placed = false;
     }

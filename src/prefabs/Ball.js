@@ -15,6 +15,7 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
 
 
     update() {
+        // the ball is always on the player before it is launched
         if(!this.launched){
             this.x = player.x;
             this.y = player.y;

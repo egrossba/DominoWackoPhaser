@@ -16,6 +16,7 @@ class Monster extends Phaser.Physics.Arcade.Sprite {
 
 
     update() {
+        // if the monster reaches a certain boundary, move to a new point on it
         if(this.x < 200 || this.x > game.config.width - 200 
             || this.y < 100 || this.y > game.config.width*2/3
             || this.body.velocity.x == 0){
@@ -24,12 +25,14 @@ class Monster extends Phaser.Physics.Arcade.Sprite {
     }
 
     move(){
+        // move the monster to a random point on the boundary so long as they are not stunned
         if(!this.gotHit && this.chasing){
             this.scene.physics.moveTo(this, Phaser.Math.Between(200, game.config.width - 200), Phaser.Math.Between(100, game.config.height*2/3), SLOW);
         }
     }
 
     break(hole){
+        // send monster to a hole to get rid of a dominoe
         this.scene.physics.moveTo(this, hole.x, hole.y, SLOW);
     }
 

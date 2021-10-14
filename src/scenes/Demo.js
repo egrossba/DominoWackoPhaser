@@ -17,7 +17,9 @@ class Demo extends Phaser.Scene {
         shift = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
         esc = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
         keyL = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L);
-    
+        
+        // creating all the assets
+
         player = new Player(this, game.config.width/2, game.config.height*3/4, 'MC');
         player.init();
 
@@ -31,6 +33,7 @@ class Demo extends Phaser.Scene {
             this.holesGroup.add(temp);
         }
 
+        // spawning the slime monsters, tagging them as such
         this.monsterGroup = this.add.group();
         for(let i = 0; i < 2; i++){
             let temp = new Monster(this, 200 + i*100, game.config.height/3, 'gMonster');
@@ -38,6 +41,8 @@ class Demo extends Phaser.Scene {
             temp.race = 'green';
             this.monsterGroup.add(temp);
         }
+
+        // spawning the wolf monsters, tagging them as such
         for(let i = 2; i < 4; i++){
             let temp = new Monster(this, 200 + i*100, game.config.height/3, 'wolf');
             temp.init();
@@ -62,7 +67,7 @@ class Demo extends Phaser.Scene {
     }
 
     update(){
-        // combos
+        // movement combos
         wCombo = keyW.isDown && !keyA.isDown && !keyD.isDown && !keyS.isDown;
         sCombo = !keyW.isDown && !keyA.isDown && !keyD.isDown && keyS.isDown;
         aCombo = !keyW.isDown && keyA.isDown && !keyD.isDown && !keyS.isDown;
@@ -77,6 +82,7 @@ class Demo extends Phaser.Scene {
         player.update();
         this.ball.update();
 
+        // shoot mechanic, respawns ball
         if(!this.ball.launched && pointer.leftButtonDown()){
             this.ball.launched = true;
             this.ball.setAlpha(1);
@@ -88,6 +94,7 @@ class Demo extends Phaser.Scene {
             });
         }
 
+        // if at any point both twins are stunned, kill them
         if(this.gTwins == 2){
             this.gTwins = 0;
             this.monsterGroup.children.each(function(m) {
@@ -114,12 +121,14 @@ class Demo extends Phaser.Scene {
             });
         }
 
+        // if player places all 4 dominoes, end the game
         if(this.gameOver == 4){
             this.scene.start('demoScene');
         }
     }
 
     setColliders(){
+        // if the player walks over holes, place a dominoe
         this.physics.add.overlap(player, this.holesGroup, (p, h) => {
             if(!h.placed){
                 h.dominote();
@@ -132,7 +141,7 @@ class Demo extends Phaser.Scene {
                 });
             }
         });
-
+        // if a monster walks over a hole, despawn the dominoe
         this.physics.add.overlap(this.monsterGroup, this.holesGroup, (m, h) => {
             if(h.placed){
                 h.dedominote();
@@ -144,9 +153,10 @@ class Demo extends Phaser.Scene {
                 });
             }
         });
-
+        // shooting monsters
         this.physics.add.collider(this.ball, this.monsterGroup, (b, m) => {
             if(b.launched && !m.gotHit){
+                // depending on the race, increment the number of ones stunned
                 if(m.race == 'green'){
                     this.gTwins++;
                 }
@@ -156,16 +166,17 @@ class Demo extends Phaser.Scene {
                 else{
                     this.cTwins++;
                 }
+                // stun the monster
                 m.gotHit = true;
                 m.setVelocity(0);
                 m.setAlpha(0.5);
-
+                // if one monster of each type is stunned, spawn chimera
                 if(this.gTwins == 1 && this.wTwins == 1){
                     if(this.chimCount < 2){
                         this.spawnChimera();
                     }
                 }
-
+                // un-stun the monster after a certain time, decrement number of ones stunned
                 this.time.delayedCall(750, () => { 
                     m.setAlpha(1);
                     m.gotHit = false;
@@ -183,17 +194,20 @@ class Demo extends Phaser.Scene {
             b.setAlpha(0);
             b.body.enable = false;
         });
-
+        // end the game if the player touches a monster
         this.physics.add.collider(this.monsterGroup, player, (m, p) => {
             this.gameOver = 4;
         });
     }
 
+    // spawn chimera
     spawnChimera(){
+        // spawn first sprite if first chimera, second if second one to spawn
         let name = 'chim1'
         if(this.chimCount % 2 == 0){
             name = 'chim2'
         }
+        // make sure to tag it as proper race
         let temp = new Monster(this, game.config.width/2, game.config.height/3, name);
         temp.init();
         temp.race = 'greenwolf';
